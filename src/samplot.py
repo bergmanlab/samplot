@@ -1705,10 +1705,10 @@ def plot_samples(read_data,
 
         if titles and \
                 len(titles) == len(bams):
-            curr_ax.set_title(titles[ax_i-1], \
+            curr_ax.set_title(titles[ax_i], \
                          fontsize=8, loc='left')
         else:
-            curr_ax.set_title(os.path.basename(bams[ax_i-1]), \
+            curr_ax.set_title(os.path.basename(bams[ax_i]), \
                          fontsize=8, loc='left')
 
 
