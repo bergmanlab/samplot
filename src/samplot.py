@@ -1748,6 +1748,10 @@ def plot_samples(read_data,
             curr_ax.yaxis.set_major_locator(ticker.LinearLocator(tick_count))
             curr_ax.tick_params(axis='both', length=0)
             curr_ax.set_xticklabels([])
+
+            if coverage_only:
+                curr_ax.set_yticklabels([])
+
         last_sample_num = number_of_axes - 1
         if annotation_files:
             last_sample_num -= len(annotation_files)
