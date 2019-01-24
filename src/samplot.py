@@ -1609,7 +1609,7 @@ def plot_samples(read_data,
         xaxis_label_fontsize, 
         yaxis_label_fontsize, 
         annotation_files, 
-        transcript_file):
+        transcript_file, coverage_only):
     """Plots all samples
     """
     max_insert_size = 0
@@ -1696,8 +1696,10 @@ def plot_samples(read_data,
                      curr_max_insert_size)
 
             cover_axs[hp] = cover_ax
-            if curr_max_insert_size > max_insert_size:
-                max_insert_size = curr_max_insert_size
+
+            if coverage_only is not True:
+                if curr_max_insert_size > max_insert_size:
+                    max_insert_size = curr_max_insert_size
 
         #{{{ set axis parameters
         #set the axis title to be either one passed in or filename
@@ -1760,7 +1762,12 @@ def plot_samples(read_data,
             curr_ax.set_xlabel('Chromosomal position on ' + chrom, fontsize=8)
 
         curr_ax = axs[hps[ int(len(hps)/2)    ]]
-        curr_ax.set_ylabel('Insert size', fontsize=8)
+
+        if coverage_only:
+            curr_ax.set_yticklabels([])
+        else:
+            curr_ax.set_ylabel('Insert size', fontsize=8)
+        
         cover_ax = cover_axs[hps[ int(len(hps)/2)    ]]
         cover_ax.set_ylabel('Coverage', fontsize=8)
         #}}}
@@ -2111,7 +2118,8 @@ if __name__ == '__main__':
         options.xaxis_label_fontsize, 
         options.yaxis_label_fontsize, 
         options.annotation_files, 
-        options.transcript_file)
+        options.transcript_file,
+        options.coverage_only)
 
     # plot legend
     plot_legend(fig, options.legend_fontsize)
