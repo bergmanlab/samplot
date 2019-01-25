@@ -1771,9 +1771,13 @@ def plot_samples(read_data,
             curr_ax.set_yticklabels([])
         else:
             curr_ax.set_ylabel('Insert size', fontsize=8)
+            curr_ax.yaxis.tick_right()
+            curr_ax.yaxis.set_label_position("right")
         
         cover_ax = cover_axs[hps[ int(len(hps)/2)    ]]
         cover_ax.set_ylabel('Coverage', fontsize=8)
+        cover_ax.yaxis.tick_left()
+        cover_ax.yaxis.set_label_position("left")
         #}}}
 
         ax_i += 1
