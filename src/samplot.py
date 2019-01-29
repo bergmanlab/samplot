@@ -1784,7 +1784,7 @@ def plot_samples(read_data,
     return ax_i
 
 
-def plot_legend(fig, legend_fontsize):
+def plot_legend(fig, legend_fontsize, minq):
     """Plots the figure legend
     """
     marker_colors = []
@@ -1835,11 +1835,21 @@ def plot_legend(fig, legend_fontsize):
                     linestyle='-',
                     lw=1)]
 
+
+    legend_elements += [mpatches.Patch(color='darkgrey',alpha=.4)]
+    marker_labels.append("Coverage (MAPQ > "+str(minq)+")")
+    legend_elements += [mpatches.Patch(color='grey',alpha=.15)]
+    marker_labels.append("Coverage (MAPQ <= "+str(minq)+")")
+
+
+
     fig.legend( legend_elements ,
                 marker_labels, 
                 loc=1,
                 fontsize = legend_fontsize,
                 frameon=False)
+
+
 
 def get_tabix_iter(chrom, pos, end, datafile):
     """Gets an iterator from a tabix BED/GFF/GFF3 file
@@ -2130,7 +2140,7 @@ if __name__ == '__main__':
         options.coverage_only)
 
     # plot legend
-    plot_legend(fig, options.legend_fontsize)
+    plot_legend(fig, options.legend_fontsize, options.minq)
 
     # Plot annotation files
     if options.annotation_files:
