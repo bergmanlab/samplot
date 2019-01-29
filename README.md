@@ -11,31 +11,79 @@ substantiate the SV.
 ```
 Usage: samplot.py [options]
 
+the following arguments are required: -b/--bams, -o/--output_file, -s/--start, -e/--end, -c/--chrom
+
 Options:
   -h, --help            show this help message and exit
-  --marker_size=MARKER_SIZE
+  --marker_size MARKER_SIZE
                         Size of marks on pairs and splits (default 3)
-  -n TITLES             Space-delimited list of plot titles. Use quote marks to include spaces (i.e. \"plot 1\" \"plot 2\")"
-  -r REFERENCE          Reference file for CRAM
-  -z Z                  Number of stdevs from the mean (default 4)
-  -b BAMS               Bam file names (CSV)
-  -o OUTPUT_FILE        Output file name
-  -s START              Start range
-  -e END                End range
-  -c CHROM              Chromosome range
-  -w WINDOW             Window size (count of bases to include), default(0.5 *
-                        len)
-  -d MAX_DEPTH          Max number of normal pairs to plot
-  -t SV_TYPE            SV type
-  -T TRANSCRIPT_FILE    GFF of transcripts
-  -A ANNOTATION_FILE    Space-delimited list of bed.gz tabixed files of annotations (such as repeats, mappability, etc.)
-  -a                    Print commandline arguments
-  -H PLOT_HEIGHT        Plot height
-  -W PLOT_WIDTH         Plot width
-  -j                    Create only the json file, not the image plot
-  --long_read=LONG_READ
-                        Min length of a read to be a long-read (default 1000)
+  -n TITLES [TITLES ...], --titles TITLES [TITLES ...]
+                        Space-delimited list of plot titles. Use quote marks
+                        to include spaces (i.e. "plot 1" "plot 2")
+  -r REFERENCE, --reference REFERENCE
+                        Reference file for CRAM, required if CRAM files used
+  -z Z, --z Z           Number of stdevs from the mean (default 4)
+  -b BAMS [BAMS ...], --bams BAMS [BAMS ...]
+                        Space-delimited list of BAM/CRAM file names
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Output file name
+  -s START, --start START
+                        Start position of region/variant
+  -e END, --end END     End position of region/variant
+  -c CHROM, --chrom CHROM
+                        Chromosome
+  -w WINDOW, --window WINDOW
+                        Window size (count of bases to include in view),
+                        default(0.5 * len)
+  -d MAX_DEPTH, --max_depth MAX_DEPTH
+                        Max number of normal pairs to plot
+  --minq MINQ           coverage from reads with MAPQ <= minq plotted in
+                        lighter grey. To disable, pass in negative value
+  -t SV_TYPE, --sv_type SV_TYPE
+                        SV type. If omitted, plot is created without variant
+                        bar
+  -T TRANSCRIPT_FILE, --transcript_file TRANSCRIPT_FILE
+                        GFF of transcripts
+  -A ANNOTATION_FILES [ANNOTATION_FILES ...], --annotation_files ANNOTATION_FILES [ANNOTATION_FILES ...]
+                        Space-delimited list of bed.gz tabixed files of
+                        annotations (such as repeats, mappability, etc.)
+  --coverage_tracktype {stack,superimpose}
+                        type of track to use for low MAPQ coverage plot.
+  -a, --print_args      Print commandline arguments
+  -H PLOT_HEIGHT, --plot_height PLOT_HEIGHT
+                        Plot height
+  -W PLOT_WIDTH, --plot_width PLOT_WIDTH
+                        Plot width
+  -q MIN_MQUAL, --min_mqual MIN_MQUAL
+                        Min mapping quality of reads to be included in plot
+  -j, --json_only       Create only the json file, not the image plot
+  --start_ci START_CI   confidence intervals of SV first breakpoint (distance
+                        from the breakpoint). Must be a comma-separated pair
+                        of ints (i.e. 20,40)
+  --end_ci END_CI       confidence intervals of SV end breakpoint (distance
+                        from the breakpoint). Must be a comma-separated pair
+                        of ints (i.e. 20,40)
+  --long_read LONG_READ
+                        Min length of a read to be treated as a long-read
+                        (default 1000)
+  --min_event_size MIN_EVENT_SIZE
+                        Min size of an event in long-read CIGAR to include
+                        (default 100)
+  --xaxis_label_fontsize XAXIS_LABEL_FONTSIZE
+                        Font size for X-axis labels (default 6)
+  --yaxis_label_fontsize YAXIS_LABEL_FONTSIZE
+                        Font size for Y-axis labels (default 6)
+  --legend_fontsize LEGEND_FONTSIZE
+                        Font size for legend labels (default 6)
+  --annotation_fontsize ANNOTATION_FONTSIZE
+                        Font size for annotation labels (default 6)
   --common_insert_size  Set common insert size for all plots
+  --hide_annotation_labels
+                        Hide the label (fourth column text) from annotation
+                        files, useful for region with many annotations
+  --coverage_only       Hide all reads and show only coverage
+  --same_yaxis_scales   Set the scales of the Y axes to the max of all
+
 ```
 
 ## Dependencies
