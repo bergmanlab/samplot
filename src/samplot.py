@@ -16,6 +16,7 @@ import matplotlib.patches as mpatches
 import argparse
 from matplotlib.offsetbox import AnchoredText
 import matplotlib.ticker as ticker
+from PIL import Image
 
 COLORS = { 
     'Deletion/Normal': 'black',
@@ -1248,18 +1249,21 @@ def setup_arguments():
     parser.add_argument("-s",
                       "--start",
                       type=int,
+                      nargs="+",
                       help="Start position of region/variant",
                       required=True)
 
     parser.add_argument("-e",
                       "--end",
                       type=int,
+                      nargs="+",
                       help="End position of region/variant",
                       required=True)
 
     parser.add_argument("-c",
                       "--chrom",
                       type=str,
+                      nargs="+",
                       help="Chromosome",
                       required=True)
 
@@ -1413,7 +1417,18 @@ def setup_arguments():
                       default=False,
                       help="Set the scales of the Y axes to the max of all",
                       required=False)
+
+    parser.add_argument("--multifig_vertical",
+                    action="store_true",
+                    default=False,
+                    help="when making multiple plots, combine plots vertically rather than horizontally",
+                    required=False)
     options = parser.parse_args()
+
+
+
+    if len(options.chrom) != len(options.start) or len(options.chrom) != len(options.end):
+        sys.exit("Error: number of chromosomes must equal number of provided starts and ends\n")
     
     if options.print_args or options.json_only:
         print_arguments(options)
@@ -2085,99 +2100,148 @@ def create_gridspec(bams, transcript_file, annotation_files, sv_type ):
 ########################################################################
 if __name__ == '__main__':
     options = setup_arguments()
-    
-    # set up plot 
-    plot_height,plot_width,window = set_plot_dimensions(options.start, 
-            options.end, 
-            options.sv_type, 
-            options.plot_height, 
-            options.plot_width, 
-            options.bams, 
-            options.annotation_files, 
-            options.transcript_file, 
-            options.window)
 
-    marker_size = options.marker_size
-    range_min = max(0,int(options.start) - window)
-    range_max = int(options.end) + window
+    imgs = []
 
-    # set up sub plots
-    matplotlib.rcParams.update({'font.size': 12})
-    fig = matplotlib.pyplot.figure(figsize=(plot_width, plot_height), dpi=300)
+    for i in range(0,len(options.chrom)):
+    
+        # set up plot 
+        plot_height,plot_width,window = set_plot_dimensions(options.start[i], 
+                options.end[i], 
+                options.sv_type, 
+                options.plot_height, 
+                options.plot_width, 
+                options.bams, 
+                options.annotation_files, 
+                options.transcript_file, 
+                options.window)
 
-    # read alignment data
-    read_data,max_coverage = get_read_data(options.chrom, 
-            options.start, 
-            options.end, 
-            options.bams, 
-            options.reference, 
-            options.min_mqual, 
-            options.coverage_only, 
-            options.long_read, 
-            options.same_yaxis_scales, 
-            options.max_depth, 
-            options.z)
-    
-    # set up grid organizer
-    grid,num_ax = create_gridspec(options.bams, 
-            options.transcript_file, 
-            options.annotation_files, 
-            options.sv_type )
-    current_axis_idx = 0
-    
-    # plot variant on top
-    if options.sv_type:
-        current_axis_idx = create_variant_plot(grid, 
+        marker_size = options.marker_size
+        range_min = max(0,int(options.start[i]) - window)
+        range_max = int(options.end[i]) + window
+
+        # set up sub plots
+        matplotlib.rcParams.update({'font.size': 12})
+        fig = matplotlib.pyplot.figure(figsize=(plot_width, plot_height), dpi=300)
+
+        # read alignment data
+        read_data,max_coverage = get_read_data(options.chrom[i], 
+                options.start[i], 
+                options.end[i], 
+                options.bams, 
+                options.reference, 
+                options.min_mqual, 
+                options.coverage_only, 
+                options.long_read, 
+                options.same_yaxis_scales, 
+                options.max_depth, 
+                options.z)
+        
+        # set up grid organizer
+        grid,num_ax = create_gridspec(options.bams, 
+                options.transcript_file, 
+                options.annotation_files, 
+                options.sv_type )
+        current_axis_idx = 0
+        
+        # plot variant on top
+        if options.sv_type:
+            current_axis_idx = create_variant_plot(grid, 
+                current_axis_idx, 
+                options.start[i], 
+                options.end[i], 
+                options.sv_type, 
+                range_min, 
+                range_max, 
+                options.start_ci, 
+                options.end_ci)
+        
+        # Plot each sample
+        current_axis_idx = plot_samples(read_data, 
+            grid, 
             current_axis_idx, 
-            options.start, 
-            options.end, 
-            options.sv_type, 
-            range_min, 
-            range_max, 
-            options.start_ci, 
-            options.end_ci)
-    
-    # Plot each sample
-    current_axis_idx = plot_samples(read_data, 
-        grid, 
-        current_axis_idx, 
-        num_ax, 
-        options.bams, 
-        options.chrom,  
-        options.coverage_tracktype, 
-        options.titles, 
-        options.same_yaxis_scales, 
-        options.xaxis_label_fontsize, 
-        options.yaxis_label_fontsize, 
-        options.annotation_files, 
-        options.transcript_file,
-        options.coverage_only)
+            num_ax, 
+            options.bams, 
+            options.chrom[i],  
+            options.coverage_tracktype, 
+            options.titles, 
+            options.same_yaxis_scales, 
+            options.xaxis_label_fontsize, 
+            options.yaxis_label_fontsize, 
+            options.annotation_files, 
+            options.transcript_file,
+            options.coverage_only)
 
-    # plot legend
-    plot_legend(fig, options.legend_fontsize, options.minq)
+        # plot legend
+        plot_legend(fig, options.legend_fontsize, options.minq)
 
-    # Plot annotation files
-    if options.annotation_files:
-        plot_annotations(options.annotation_files, 
-            options.chrom, 
-            options.start, 
-            options.end, 
-            options.hide_annotation_labels, 
-            options.annotation_fontsize, 
-            grid, 
-            current_axis_idx)
+        # Plot annotation files
+        if options.annotation_files:
+            plot_annotations(options.annotation_files, 
+                options.chrom[i], 
+                options.start[i], 
+                options.end[i], 
+                options.hide_annotation_labels, 
+                options.annotation_fontsize, 
+                grid, 
+                current_axis_idx)
 
-    # Plot sorted/bgziped/tabixed transcript file
-    if options.transcript_file:
-        plot_transcript(options.transcript_file, 
-            options.chrom, 
-            options.start, 
-            options.end, 
-            grid, 
-            options.annotation_fontsize, 
-            options.xaxis_label_fontsize)
-    
-    # save
-    matplotlib.rcParams['agg.path.chunksize'] = 100000
-    matplotlib.pyplot.tight_layout(pad=0.8,h_pad=.00001, w_pad=.00001)
-    matplotlib.pyplot.savefig(options.output_file)
+        # Plot sorted/bgziped/tabixed transcript file
+        if options.transcript_file:
+            plot_transcript(options.transcript_file, 
+                options.chrom[i], 
+                options.start[i], 
+                options.end[i], 
+                grid, 
+                options.annotation_fontsize, 
+                options.xaxis_label_fontsize)
+        
+        # save
+        matplotlib.rcParams['agg.path.chunksize'] = 100000
+        matplotlib.pyplot.tight_layout(pad=0.8,h_pad=.00001, w_pad=.00001)
+        
+        if len(options.chrom) > 1:
+            matplotlib.pyplot.savefig(options.output_file+"_"+str(i)+".png")
+            imgs.append(options.output_file+"_"+str(i)+".png")
+        else:
+            matplotlib.pyplot.savefig(options.output_file)
+            sys.exit(0)
+
+
+
+# combines plots into single image
+    total_width = 0
+    total_height = 0
+    max_width = 0
+    max_height = 0
+    images = []
+    for img in imgs:
+        image = Image.open(img).convert('RGB')
+        images.append(image)
+        total_width += image.size[0]
+        total_height += image.size[1]
+        if max_width < image.size[0]:
+            max_width = image.size[0]
+        if max_height < image.size[1]:
+            max_height = image.size[1]
+            
+    if options.multifig_vertical:
+        final_plot = Image.new('RGB',(max_width, total_height))
+        y_pos = 0
+        for i in images:
+            final_plot.paste(i,(0,y_pos))
+            y_pos += i.size[1]
+
+    else:
+        final_plot = Image.new('RGB',(total_width, max_height))
+
+        x_pos = 0
+        for i in images:
+            final_plot.paste(i,(x_pos,0))
+            x_pos += i.size[0]
+
+    final_plot.save(options.output_file)
+
+
+    for img in imgs:
+        os.remove(img)
