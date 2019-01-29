@@ -1836,10 +1836,24 @@ def plot_legend(fig, legend_fontsize, minq):
                     lw=1)]
 
 
-    legend_elements += [mpatches.Patch(color='darkgrey',alpha=.4)]
-    marker_labels.append("Coverage (MAPQ > "+str(minq)+")")
-    legend_elements += [mpatches.Patch(color='grey',alpha=.15)]
-    marker_labels.append("Coverage (MAPQ <= "+str(minq)+")")
+
+    if minq > 0:
+        legend_elements += [mpatches.Patch(color='darkgrey',alpha=.4)]
+        marker_labels.append("Coverage (MAPQ > "+str(minq)+")")
+        legend_elements += [mpatches.Patch(color='grey',alpha=.15)]
+        marker_labels.append("Coverage (MAPQ <= "+str(minq)+")")
+
+    elif minq == 0:
+        legend_elements += [mpatches.Patch(color='darkgrey',alpha=.4)]
+        marker_labels.append("Coverage (MAPQ > "+str(minq)+")")
+        legend_elements += [mpatches.Patch(color='grey',alpha=.15)]
+        marker_labels.append("Coverage (MAPQ = "+str(minq)+")")
+    
+    else:
+        legend_elements += [mpatches.Patch(color='darkgrey',alpha=.4)]
+        marker_labels.append("Coverage")
+
+
 
 
 
