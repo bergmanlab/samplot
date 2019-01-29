@@ -83,6 +83,8 @@ Options:
                         files, useful for region with many annotations
   --coverage_only       Hide all reads and show only coverage
   --same_yaxis_scales   Set the scales of the Y axes to the max of all
+  --multifig_vertical   when making multiple plots, combine plots vertically
+                        rather than horizontally
 
 ```
 
@@ -92,6 +94,7 @@ Options:
 * matplotlib
 * pysam
 * statistics
+* Pillow
 
 All of these are available from [pip](https://pypi.python.org/pypi/pip).
 
