@@ -1624,7 +1624,7 @@ def plot_samples(read_data,
         xaxis_label_fontsize, 
         yaxis_label_fontsize, 
         annotation_files, 
-        transcript_file, coverage_only):
+        transcript_file, coverage_only, sv_type):
     """Plots all samples
     """
     max_insert_size = 0
@@ -1722,11 +1722,20 @@ def plot_samples(read_data,
 
         if titles and \
                 len(titles) == len(bams):
-            curr_ax.set_title(titles[ax_i], \
-                         fontsize=8, loc='left')
+            if sv_type is None: 
+                curr_ax.set_title(titles[ax_i], \
+                            fontsize=8, loc='left')
+            else:
+                curr_ax.set_title(titles[ax_i-1], \
+                            fontsize=8, loc='left')
+
         else:
-            curr_ax.set_title(os.path.basename(bams[ax_i]), \
-                         fontsize=8, loc='left')
+            if sv_type is None:
+                curr_ax.set_title(os.path.basename(bams[ax_i]), \
+                            fontsize=8, loc='left')
+            else:
+                curr_ax.set_title(os.path.basename(bams[ax_i-1]), \
+                            fontsize=8, loc='left')
 
 
         if len(axs) > 1:
@@ -2170,7 +2179,8 @@ if __name__ == '__main__':
             options.yaxis_label_fontsize, 
             options.annotation_files, 
             options.transcript_file,
-            options.coverage_only)
+            options.coverage_only,
+            options.sv_type)
 
         # plot legend on first plot
         if i == 0:
