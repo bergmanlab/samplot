@@ -2172,8 +2172,9 @@ if __name__ == '__main__':
             options.transcript_file,
             options.coverage_only)
 
-        # plot legend
-        plot_legend(fig, options.legend_fontsize, options.minq)
+        # plot legend on first plot
+        if i == 0:
+            plot_legend(fig, options.legend_fontsize, options.minq)
 
         # Plot annotation files
         if options.annotation_files:
