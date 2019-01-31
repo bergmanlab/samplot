@@ -208,7 +208,7 @@ def setup_arguments():
                       required=False)
 
     parser.add_argument("--normalize_cov",
-                type=int,
+                type=float,
                 help="Divides raw coverage by given value to plot relative coverage",
                 required=False)
 
