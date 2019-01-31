@@ -213,7 +213,7 @@ def setup_arguments():
                 required=False)
 
     parser.add_argument("--add_hline",
-                type=int,
+                type=float,
                 help="Adds a horizontal line to plot at given y-axis value",
                 required=False)
 
