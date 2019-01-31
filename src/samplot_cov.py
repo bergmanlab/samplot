@@ -406,6 +406,9 @@ def plot_coverage(coverage,
             cover_y_lowqual.append(0)
             cover_y_highqual.append(0)
             cover_y_all.append(0)
+
+        print(pos,cover_y_all[len(cover_y_all)-1], sep="\t")
+
     cover_y_lowqual = np.array(cover_y_lowqual)
     cover_y_highqual = np.array(cover_y_highqual)
     cover_y_all = np.array(cover_y_all)
@@ -633,7 +636,7 @@ def plot_legend(fig, legend_fontsize, minq, hline):
 
     if hline is not None:
         legend_elements += [matplotlib.pyplot.Line2D([0,0],[0,1],color='black', alpha=0.5)]
-        marker_labels.append("Avg. Norm. Cov. ("+str(hline)+")")
+        marker_labels.append("Avg. Norm. Cov. ("+format(hline, '.2f')+")")
     
     else:
         legend_elements += [mpatches.Patch(color='darkgrey',alpha=.4)]
