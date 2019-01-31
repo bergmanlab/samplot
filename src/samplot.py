@@ -1016,7 +1016,7 @@ def plot_coverage(coverage,
                 hp_count,
                 max_coverage, 
                 tracktype,
-                yaxis_label_fontsize):
+                yaxis_label_fontsize, normalize):
     """Plots high and low quality coverage for the region
 
     User may specify a preference between stacked and superimposed 
@@ -1044,6 +1044,11 @@ def plot_coverage(coverage,
     cover_y_lowqual = np.array(cover_y_lowqual)
     cover_y_highqual = np.array(cover_y_highqual)
     cover_y_all = np.array(cover_y_all)
+
+    if normalize is not None:
+        cover_y_lowqual = cover_y_lowqual/normalize
+        cover_y_highqual = cover_y_highqual/normalize
+        cover_y_all = cover_y_all/normalize
 
     if max_coverage > 0:
         max_plot_depth = max_coverage
@@ -1423,6 +1428,12 @@ def setup_arguments():
                     default=False,
                     help="when making multiple plots, combine plots vertically rather than horizontally",
                     required=False)
+
+    parser.add_argument("--normalize_cov",
+                type=int,
+                help="Divides raw coverage by given value to plot relative coverage",
+                required=False)
+
     options = parser.parse_args()
 
 
@@ -1624,7 +1635,7 @@ def plot_samples(read_data,
         xaxis_label_fontsize, 
         yaxis_label_fontsize, 
         annotation_files, 
-        transcript_file, coverage_only, sv_type):
+        transcript_file, coverage_only, sv_type, normalize):
     """Plots all samples
     """
     max_insert_size = 0
@@ -1678,7 +1689,7 @@ def plot_samples(read_data,
                     len(hps), 
                     max_coverage, 
                     coverage_tracktype, 
-                    yaxis_label_fontsize)
+                    yaxis_label_fontsize, normalize)
             
             curr_min_insert_size,curr_max_insert_size = plot_linked_reads(curr_pairs,
                     curr_splits,
@@ -1799,7 +1810,10 @@ def plot_samples(read_data,
             curr_ax.yaxis.set_label_position("right")
         
         cover_ax = cover_axs[hps[ int(len(hps)/2)    ]]
-        cover_ax.set_ylabel('Coverage', fontsize=8)
+        if normalize is None:
+            cover_ax.set_ylabel('Coverage', fontsize=8)
+        else:
+            cover_ax.set_ylabel('Relative Coverage', fontsize=8)
         cover_ax.yaxis.tick_left()
         cover_ax.yaxis.set_label_position("left")
         #}}}
@@ -2180,7 +2194,8 @@ if __name__ == '__main__':
             options.annotation_files, 
             options.transcript_file,
             options.coverage_only,
-            options.sv_type)
+            options.sv_type,
+            options.normalize_cov)
 
         # plot legend on first plot
         if i == 0:
