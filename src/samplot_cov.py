@@ -604,7 +604,7 @@ def plot_samples(   read_data,
         if normalize is None:
             cover_ax.set_ylabel('Coverage', fontsize=8)
         else:
-            cover_ax.set_ylabel('Relative Coverage', fontsize=8)
+            cover_ax.set_ylabel('Normalized Coverage', fontsize=8)
         cover_ax.yaxis.tick_left()
         cover_ax.yaxis.set_label_position("left")
         #}}}
