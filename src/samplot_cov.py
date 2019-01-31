@@ -73,9 +73,10 @@ def main():
                                     options.yaxis_label_fontsize, 
                                     range_min,
                                     range_max,
-                                    options.normalize_cov)
+                                    options.normalize_cov,
+                                    options.add_hline)
 
-    plot_legend(fig, options.legend_fontsize, options.minq)
+    plot_legend(fig, options.legend_fontsize, options.minq, options.add_hline)
 
     # save
     matplotlib.rcParams['agg.path.chunksize'] = 100000
@@ -209,6 +210,11 @@ def setup_arguments():
     parser.add_argument("--normalize_cov",
                 type=int,
                 help="Divides raw coverage by given value to plot relative coverage",
+                required=False)
+
+    parser.add_argument("--add_hline",
+                type=int,
+                help="Adds a horizontal line to plot at given y-axis value",
                 required=False)
 
     options = parser.parse_args()
@@ -375,7 +381,7 @@ def plot_coverage(coverage,
                 hp_count,
                 max_coverage, 
                 tracktype,
-                yaxis_label_fontsize, normalize):
+                yaxis_label_fontsize, normalize, hline):
     """Plots high and low quality coverage for the region
 
     User may specify a preference between stacked and superimposed 
@@ -476,6 +482,9 @@ def plot_coverage(coverage,
     ax2.tick_params(axis='x',length=0)
     ax2.tick_params(axis='y',length=0)
 
+    if hline is not None:
+        ax2.axhline(y=hline, color='black',alpha=0.5)
+
     return ax2
 
 def plot_samples(   read_data, 
@@ -490,7 +499,8 @@ def plot_samples(   read_data,
                     yaxis_label_fontsize,
                     range_min,
                     range_max, 
-                    normalize):
+                    normalize,
+                    hline):
 
 
 
@@ -529,7 +539,7 @@ def plot_samples(   read_data,
                     len(hps), 
                     max_coverage, 
                     coverage_tracktype, 
-                    yaxis_label_fontsize, normalize)
+                    yaxis_label_fontsize, normalize, hline)
 
             cover_axs[hp] = cover_ax
 
@@ -602,7 +612,7 @@ def plot_samples(   read_data,
         ax_i += 1
     return ax_i
 
-def plot_legend(fig, legend_fontsize, minq):
+def plot_legend(fig, legend_fontsize, minq, hline):
     """Plots the figure legend
     """
 
@@ -620,6 +630,10 @@ def plot_legend(fig, legend_fontsize, minq):
         marker_labels.append("Coverage (MAPQ > "+str(minq)+")")
         legend_elements += [mpatches.Patch(color='grey',alpha=.15)]
         marker_labels.append("Coverage (MAPQ = "+str(minq)+")")
+
+    if hline is not None:
+        legend_elements += [matplotlib.pyplot.Line2D([0,0],[0,1],color='black', alpha=0.5)]
+        marker_labels.append("Avg. Norm. Cov. ("+str(hline)+")")
     
     else:
         legend_elements += [mpatches.Patch(color='darkgrey',alpha=.4)]
